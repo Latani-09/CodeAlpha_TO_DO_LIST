@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace To_do_list.Data.Migrations
+namespace To_do_list.Migrations
 {
     public partial class initial : Migration
     {
@@ -111,13 +111,13 @@ namespace To_do_list.Data.Migrations
                 {
                     TaskID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    createdAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    updatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Due = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    priority = table.Column<int>(type: "int", nullable: false),
-                    status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    createdAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    updatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Due = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    priority = table.Column<int>(type: "int", nullable: true),
+                    status = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace To_do_list.Controllers
+namespace todolist.Controllers
 {
-    
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class WeatherForecastController : Controller
+    public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
         {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+    };
 
         private readonly ILogger<WeatherForecastController> _logger;
 
@@ -20,7 +20,7 @@ namespace To_do_list.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

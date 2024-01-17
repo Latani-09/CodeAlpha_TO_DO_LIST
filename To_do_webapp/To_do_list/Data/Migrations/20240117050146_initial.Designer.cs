@@ -9,10 +9,10 @@ using To_do_list.Data;
 
 #nullable disable
 
-namespace To_do_list.Data.Migrations
+namespace To_do_list.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240109095755_initial")]
+    [Migration("20240117050146_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -374,31 +374,28 @@ namespace To_do_list.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Due")
+                    b.Property<DateTime?>("Due")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("createdAt")
+                    b.Property<DateTime?>("createdAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("priority")
+                    b.Property<int?>("priority")
                         .HasColumnType("int");
 
                     b.Property<string>("status")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("type")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("updatedAt")
+                    b.Property<DateTime?>("updatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("TaskID");
