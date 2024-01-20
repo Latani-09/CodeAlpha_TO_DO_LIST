@@ -1,11 +1,15 @@
 import React, { useState,useEffect } from 'react';
 import authService from './api-authorization/AuthorizeService';
 import Form from 'react-bootstrap/Form';
-import { ButtonGroup, ToggleButton } from 'react-bootstrap';
+import FormGroup from 'react-bootstrap/FormGroup'
+import {  ToggleButton } from 'react-bootstrap';
+
 export const Dashboard = () => {
+
     const [seen, setSeen] = useState(false);
     const [tasks, setTasks] = useState([]);
     const [loadingtasks, setLoading] = useState(false);
+    
 
     const togglePop = () => {
         setSeen(!seen);
@@ -42,6 +46,12 @@ export const Dashboard = () => {
             body: JSON.stringify(taskToAdd)
         });
         const data = await response.json();
+       
+            console.log(response);
+               
+            window.location.reload();
+        
+
         // Handle the data as needed, e.g., update state or perform other actions
     };
 
@@ -66,8 +76,9 @@ export const Dashboard = () => {
 
 // Rest of the code remains the same...
 
-const rendertasksTable = (tasks) => {
-
+const rendertasksTable = (tasks) =>
+{
+    let expandedTaskId = null;
 
     const gridStyle = {
         display: 'grid',
@@ -85,14 +96,60 @@ const rendertasksTable = (tasks) => {
     const h3Style = {
         marginTop: '0',
     };
+    const buttonStyle = {
+        marginRight: '2px', // Adjust margin if needed
+        borderradius:'3px'
+        
+    };
+
+    const handleExpand = (taskId) => {
+        expandedTaskId=(taskId === expandedTaskId ? null : taskId);
+    };
+
+    const handleEdit = (taskId) => {
+        // Handle edit operation
+        console.log(`Edit task with ID: ${taskId}`);
+    };
+
+    const handleDelete = (taskId) => {
+        // Handle delete operation
+        console.log(`Delete task with ID: ${taskId}`);
+    };
+
+    let today = new Date();
+    const editSymbol = '\u270E'; // Edit symbol
+    const deleteSymbol = '\u2716'; // Delete symbol
+    const expandSymbol = '\u2193'; // Expand symbol
+    tasks.forEach(function (task) {
+
+       
+        if (task.priority == 0) {
+            task.priority ='Low'
+        }
+        if (task.priority == 1) {
+            task.priority = 'Medium'
+        }
+        if (task.priority == 2) {
+            task.priority = 'High'
+        }
+        if (task.priority == 3) {
+            task.priority = 'Default'
+        }
+    })
     return (
         <div style={gridStyle}>
-            {tasks.map(task => (
+            {tasks.map((task) => (
                 <div key={task.taskID} style={tileStyle}>
-                    <h3 style={h3Style}>{task.title}</h3>
+                    <h5 style={h3Style}>{task.title}</h5>
                     <p>Priority: {task.priority}</p>
-                    <p>Due: {task.due}</p>
-                    <p>Description: {task.description}</p>
+                    <p>Due: {(task.due.split('T')[0] == today.toISOString().split('T')[0]) ? ('Today' + '  ' + task.due.split('T')[1].slice(0,5)) : (task.due.split('T')[0] + ' ' + task.due.split('T')[1].slice(0, 5))}</p>
+                  
+                    <button style={buttonStyle} onClick={() => handleEdit(task.taskID)}>
+                        {editSymbol}
+                    </button>
+                    <button style={buttonStyle} onClick={() => handleDelete(task.taskID)}>
+                        {deleteSymbol} 
+                    </button>
                 </div>
             ))}
         </div>
@@ -102,20 +159,49 @@ const rendertasksTable = (tasks) => {
     const Popup = ({ toggle, handleAddTask, addTask }) => {
         const [Title, setTitle] = useState('');
         const [description, setDescription] = useState('');
-        const [due, setDue] = useState('');
-        const [priority, setPriority] = useState('default');
-        const [radioValue, setRadioValue] = useState("default");
+        const [due, setDue] = useState (new Date());
+        const [time, onChange] = useState('10:00');
+        const [DueDate, setDueDate] = useState('No due');
+        const [priority, setPriority] = useState('Default');
         const priorities = [
             { name: "Default", value: "Default" },
             { name: "Low", value: "Low" },
             { name: "Medium", value: "Medium" },
             { name: "High", value: "High" }
         ];
+        const Days = [
+            { name: "Today", value: "Today" },
+            { name: "Pick a date", value: "Pick a date" },
+            { name: "No due", value: "No due" }
+        ];
         
 
+        const setDueDate_Time = (DueDate, due, time) => {
+             let day = new Date().toISOString().split('T')[0]
+            if (DueDate == 'No due') {
+                setDue(null)
+                return;
+            }
+            else if (DueDate == 'Today') {
+               
+                setDue(day)
+}
+            else if (DueDate == 'Tomorrow') {
+               
+                setDue(day)
+            }
+            
+                // Create a Date object from the date part
+                const combinedDate = new Date(`${day}T${time}:00.000Z`);
 
+                // Get the combined ISO date string
+            const combinedISODate = combinedDate.toISOString();
+            setDue(combinedISODate);
+            
+        }
         const handleSubmit = (e) => {
             e.preventDefault();
+            setDueDate_Time(DueDate, due, time);
             var task_to_add = {
                 
                 Title: Title,
@@ -125,6 +211,7 @@ const rendertasksTable = (tasks) => {
             };
 
             addTask(task_to_add);
+
             toggle(); // Close the popup after submitting
         };
 
@@ -141,7 +228,6 @@ const rendertasksTable = (tasks) => {
                         <div className="modal-body">
                             <Form onSubmit={handleSubmit}>
                                 <div className="form-group">
-                                    <label>Title:</label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -151,7 +237,7 @@ const rendertasksTable = (tasks) => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Description:</label>
+                                <label></label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -161,33 +247,49 @@ const rendertasksTable = (tasks) => {
                                     />
                                 </div>
                                 
-                                <div className="form-group">
+                                <FormGroup >
                                     <label>Due:</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        value={due}
-                                        onChange={(e) => setDue(e.target.value)}
-                                        placeholder="Enter due date"
-                                    />
+                                    <fieldset name='grp1'>
+                                        {Days.map((radio, idx) => (
+                                            <ToggleButton
+                                                key={idx}
+                                                id={`radio-${idx}`}
+                                                type="radio"
+                                                variant={'outline-success'}
+                                                name="dueRadio"
+                                                value={radio.value}
+                                                checked={DueDate === radio.value}
+                                                onChange={(e) => setDueDate(e.currentTarget.value)}
+                                            >
+                                                {radio.name}
+                                            </ToggleButton>
+                                        ))}
+                                    </fieldset >
+                                    {DueDate === 'Pick a date' ?
+                                        <input type='date'></input> : <p></p>}
+                                    <input type='time'></input>
+                                </FormGroup>
+
+                                <div className="form-group">
+                                    <label>Priority:</label>
+                                    <fieldset name='grp2'>
+                                        {priorities.map((radio2, idx) => (
+                                            <ToggleButton
+                                                key={idx}
+                                                id={`radio2-${idx}`}
+                                                type="radio"
+                                                variant={'outline-success'}
+                                                name="priorityRadio"
+                                                value={radio2.value}
+                                                checked={priority === radio2.value}
+                                                onChange={(e) => setPriority(e.currentTarget.value)}
+                                            >
+                                                {radio2.name}
+                                            </ToggleButton>
+                                        ))}
+                                    </fieldset>
                                 </div>
-                                
-                                <ButtonGroup>
-                                    {priorities.map((radio, idx) => (
-                                        <ToggleButton
-                                            key={idx}
-                                            id={`radio-${idx}`}
-                                            type="radio"
-                                            variant={idx % 2 ? 'outline-success' : 'outline-danger'}
-                                            name="radio"
-                                            value={radio.value}
-                                            checked={priority === radio.value}
-                                            onChange={(e) => setPriority(e.currentTarget.value)}
-                                        >
-                                            {radio.name}
-                                        </ToggleButton>
-                                    ))}
-                                </ButtonGroup>
+
                                
 
                                 <div className="modal-footer">

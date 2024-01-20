@@ -5,10 +5,6 @@ namespace To_do_list.DTOS
 {
     public class TaskDTO
     {
-     
-
-          
-     
             public string Title { get; set; }
             public string? Description { get; set; }
             public string? Due { get; set; }
@@ -16,7 +12,7 @@ namespace To_do_list.DTOS
      
             public string? status { get; set; }
 
-            public string? Priority { get; set; }
+        public string? Priority { get; set; }
 
         public enum PriorityEnum
         {
@@ -55,7 +51,7 @@ namespace To_do_list.DTOS
             if (Due != null)
             {
                 // Use DateTime.TryParseExact to attempt parsing with a specific format
-                if (DateTime.TryParseExact(Due, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime))
+                if (DateTime.TryParse(Due, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime))
                 {
                     return parsedDateTime;
                 }
