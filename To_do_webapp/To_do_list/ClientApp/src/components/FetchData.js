@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import authService from './api-authorization/AuthorizeService';
 import Popup from "reactjs-popup";
 
-export class FetchData extends Component {
+export class FetchData extends Component
+{
     static displayName = FetchData.name;
 
     constructor(props) {
@@ -13,7 +14,8 @@ export class FetchData extends Component {
     componentDidMount() {
         this.populateWeatherData();
         this.populatetasks();
-        this.addtasks()
+        this.addtasks();
+       
     }
 
     static renderForecastsTable(forecasts) {
@@ -41,28 +43,35 @@ export class FetchData extends Component {
         );
     }
     static rendertasksTable(tasks) {
+        const gridStyle = {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: '20px',
+        };
+
+        const tileStyle = {
+            border: '1px solid #ddd',
+            padding: '15px',
+            borderRadius: '8px',
+            boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)',
+        };
+
+        const h3Style = {
+            marginTop: '0',
+        };
         return (
-            <table className='table table-striped' aria-labelledby="tabelLabel">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Priority </th>
-                        <th>Due</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {tasks.map(task =>
-                        <tr key={task.taskID}>
-                            <td>{task.title}</td>
-                            <td>{task.priority}</td>
-                            <td>{task.due}</td>
-                            <td>{task.description}</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+            <div style={gridStyle}>
+                {tasks.map(task => (
+                    <div key={task.taskID} style={tileStyle}>
+                        <h3 style={h3Style}>{task.title}</h3>
+                        <p>Priority: {task.priority}</p>
+                        <p>Due: {task.due}</p>
+                        <p>Description: {task.description}</p>
+                    </div>
+                ))}
+            </div>
         );
+       
     }
 
 
@@ -70,9 +79,9 @@ export class FetchData extends Component {
     
 
     render() {
-        let contents = this.state.loading
+      /*  let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : FetchData.renderForecastsTable(this.state.forecasts);
+            : FetchData.renderForecastsTable(this.state.forecasts);  */
          let tasks_view = this.state.loadingtasks
             ? <p><em>Loading...</em></p>
             : FetchData.rendertasksTable(this.state.tasks);
@@ -82,7 +91,7 @@ export class FetchData extends Component {
             <div>
                 <h1 id="tabelLabel" >Weather forecast</h1>
                 <p>This component demonstrates fetching data from the server.</p>
-                {contents}
+                
                 {tasks_view}
 
             </div>
@@ -93,7 +102,23 @@ export class FetchData extends Component {
 
         );
     };
+    async addtasks() {
+        var task_to_add = {
+            Title: 'newTask',
+            Description: ''
 
+        }
+
+        const token = await authService.getAccessToken();
+        const response = await fetch('todotask/addTask', {
+            method: 'post',
+            headers: !token ? {} : { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(task_to_add)
+
+        });
+        const data = await response.json();
+
+    }
     async populateWeatherData() {
         const token = await authService.getAccessToken();
         const response = await fetch('weatherforecast', {
@@ -119,23 +144,7 @@ export class FetchData extends Component {
         catch (error) { console.log(error) }
     }
     
-    async addtasks() {
-        var task_to_add = {
-            Title: 'newTask',
-            Description:''
 
-        }
-
-        const token = await authService.getAccessToken();
-        const response = await fetch('todotask/addTask', {
-            method:'post',
-            headers: !token ? {} : { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify(task_to_add)
-            
-        });
-        const data = await response.json();
-       
-    }
 }
 
 
@@ -270,6 +279,23 @@ export class FetchData extends Component {
         //    body: JSON.stringify(formData),
         //});
             console.log(response)
+    }
+        async addtasks() {
+        var task_to_add = {
+            Title: 'newTask',
+            Description:''
+
+        }
+
+        const token = await authService.getAccessToken();
+        const response = await fetch('todotask/addTask', {
+            method:'post',
+            headers: !token ? {} : { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(task_to_add)
+            
+        });
+        const data = await response.json();
+       
     }
 }
 

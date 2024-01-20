@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace To_do_list.DTOS
 {
@@ -15,13 +16,14 @@ namespace To_do_list.DTOS
      
             public string? status { get; set; }
 
-        public string? Priority { get; set; }
+            public string? Priority { get; set; }
 
         public enum PriorityEnum
         {
             Low,
             Medium,
-            High
+            High,
+            Default
         }
 
         public PriorityEnum GetPriorityEnum()
@@ -43,25 +45,33 @@ namespace To_do_list.DTOS
             else
             {
                 // Handle the case when the input string is null or empty
-                throw new ArgumentNullException(nameof(Priority));
+                return PriorityEnum.Default;
             }
         }
 
 
-        public DateTime DeserializeDate()
+        public DateTime? DeserializeDate()
         {
-
-           
-                // Use DateTime.Parse for automatic parsing based on standard date and time formats
-                DateTime parsedDateTime = DateTime.Parse(Due);
-                return parsedDateTime;
-                // Alternatively, you can use DateTime.ParseExact to specify a custom format
-                // DateTime parsedDateTime = DateTime.ParseExact(dateString, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
-
-                Console.WriteLine(parsedDateTime);
-            
-         }
-
-         
+            if (Due != null)
+            {
+                // Use DateTime.TryParseExact to attempt parsing with a specific format
+                if (DateTime.TryParseExact(Due, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime))
+                {
+                    return parsedDateTime;
+                }
+                else
+                {
+                    // Return null if the date is not in the expected format
+                    return null;
+                }
+            }
+            else
+            {
+                // Return null if Due is null
+                return null;
+            }
         }
+
+
+    }
 }
