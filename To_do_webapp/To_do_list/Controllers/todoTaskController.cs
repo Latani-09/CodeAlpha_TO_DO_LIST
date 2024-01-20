@@ -50,7 +50,14 @@ namespace To_do_list.Controllers
             var task_to_add = new Task_to_do()
             {
                 TaskID=new Guid(),
-                Title = task.Title
+                Title = task.Title,
+                createdAt = DateTime.Now,
+                Description = task.Description,
+                status=task.status,
+                priority= (Task_to_do.Priority?)task.GetPriorityEnum(),
+                Due=task.DeserializeDate(),
+                type=task.type,
+
             };
 
             await _datacontext.Tasks.AddAsync(task_to_add);

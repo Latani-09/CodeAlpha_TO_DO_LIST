@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import authService from './api-authorization/AuthorizeService'
+import authService from './api-authorization/AuthorizeService';
+import Popup from "reactjs-popup";
 
 export class FetchData extends Component {
     static displayName = FetchData.name;
@@ -12,7 +13,7 @@ export class FetchData extends Component {
     componentDidMount() {
         this.populateWeatherData();
         this.populatetasks();
-        //this.addtasks()
+        this.addtasks()
     }
 
     static renderForecastsTable(forecasts) {
@@ -78,12 +79,18 @@ export class FetchData extends Component {
         
         return (
             <div>
+            <div>
                 <h1 id="tabelLabel" >Weather forecast</h1>
                 <p>This component demonstrates fetching data from the server.</p>
                 {contents}
                 {tasks_view}
 
             </div>
+            <Popup trigger={<button>Trigger</button>} position="right center">
+             <div>Popup content here</div>
+                </Popup>
+            </div>
+
         );
     };
 
