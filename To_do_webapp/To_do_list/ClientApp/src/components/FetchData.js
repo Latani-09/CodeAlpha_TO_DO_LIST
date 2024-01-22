@@ -43,27 +43,12 @@ export class FetchData extends Component
         );
     }
     static rendertasksTable(tasks) {
-        const gridStyle = {
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-            gap: '20px',
-        };
 
-        const tileStyle = {
-            border: '1px solid #ddd',
-            padding: '15px',
-            borderRadius: '8px',
-            boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)',
-        };
-
-        const h3Style = {
-            marginTop: '0',
-        };
         return (
-            <div style={gridStyle}>
+            <div >
                 {tasks.map(task => (
-                    <div key={task.taskID} style={tileStyle}>
-                        <h3 style={h3Style}>{task.title}</h3>
+                    <div key={task.taskID} >
+                        <h3>{task.title}</h3>
                         <p>Priority: {task.priority}</p>
                         <p>Due: {task.due}</p>
                         <p>Description: {task.description}</p>

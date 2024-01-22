@@ -2,10 +2,12 @@ import React, { useState,useEffect } from 'react';
 import authService from './api-authorization/AuthorizeService';
 import Form from 'react-bootstrap/Form';
 import FormGroup from 'react-bootstrap/FormGroup'
-import {  ToggleButton } from 'react-bootstrap';
-
+import { ToggleButton } from 'react-bootstrap';
+import  styles  from './Dashboard.module.css' ;
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export const Dashboard = () => {
-
+   
     const [seen, setSeen] = useState(false);
     const [tasks, setTasks] = useState([]);
     const [loadingtasks, setLoading] = useState(false);
@@ -45,6 +47,7 @@ export const Dashboard = () => {
             headers: !token ? {} : { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify(taskToAdd)
         });
+       
         const data = await response.json();
        
             console.log(response);
@@ -54,10 +57,12 @@ export const Dashboard = () => {
 
         // Handle the data as needed, e.g., update state or perform other actions
     };
+    
 
     const handleAddTask = (e) => {
         e.preventDefault();
-        // Code to handle adding a task goes here
+        toast.success("Task added successfully!");
+       
     };
 
     let tasks_view = loadingtasks
@@ -66,7 +71,7 @@ export const Dashboard = () => {
 
     return (
         <div>
-            <button onClick={togglePop} style={addButtonStyle}>+</button>
+            <button onClick={togglePop} className={styles.addButtonStyle}>+</button>
             {seen ? <Popup toggle={togglePop} handleAddTask={handleAddTask} addTask={addTask} /> : null}
 
             {tasks_view}
@@ -79,29 +84,28 @@ export const Dashboard = () => {
 const rendertasksTable = (tasks) =>
 {
     let expandedTaskId = null;
+    const deleteTask = async (taskId) => {
+        try {
+            const token = await authService.getAccessToken();
+            const response = await fetch(`todotask/taskDelete${taskId}`, {
+                method: 'delete',
+                headers: !token ? {} : { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            });
 
-    const gridStyle = {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-        gap: '20px',
-    };
+            if (response.ok) {
+                toast.success("Task deleted successfully!");
 
-    const tileStyle = {
-        border: '1px solid #ddd',
-        padding: '15px',
-        borderRadius: '8px',
-        boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)',
-    };
-
-    const h3Style = {
-        marginTop: '0',
-    };
-    const buttonStyle = {
-        marginRight: '2px', // Adjust margin if needed
-        borderradius:'3px'
-        
-    };
-
+                // Optionally, you can update the state or perform other actions after a successful deletion.
+            } else {
+                const errorData = await response.json();
+                toast.error(`Error deleting task: ${errorData.message}`);
+            }
+        } catch (error) {
+            console.error("An error occurred during task deletion:", error);
+            toast.error("An unexpected error occurred while deleting the task.");
+        }
+    }
+    
     const handleExpand = (taskId) => {
         expandedTaskId=(taskId === expandedTaskId ? null : taskId);
     };
@@ -112,7 +116,10 @@ const rendertasksTable = (tasks) =>
     };
 
     const handleDelete = (taskId) => {
+        deleteTask(taskId);
+       
         // Handle delete operation
+
         console.log(`Delete task with ID: ${taskId}`);
     };
 
@@ -137,22 +144,24 @@ const rendertasksTable = (tasks) =>
         }
     })
     return (
-        <div style={gridStyle}>
+        <div className={styles.gridStyle}>
             {tasks.map((task) => (
-                <div key={task.taskID} style={tileStyle}>
-                    <h5 style={h3Style}>{task.title}</h5>
+                <div key={task.taskID} className={styles.tileStyle}>
+                    <h5 className={styles.h3Style}>{task.title}</h5>
                     <p>Priority: {task.priority}</p>
                     <p>Due: {(task.due.split('T')[0] == today.toISOString().split('T')[0]) ? ('Today' + '  ' + task.due.split('T')[1].slice(0,5)) : (task.due.split('T')[0] + ' ' + task.due.split('T')[1].slice(0, 5))}</p>
-                  
-                    <button style={buttonStyle} onClick={() => handleEdit(task.taskID)}>
+
+                    <button className={styles.buttonStyle} onClick={() => handleEdit(task.taskID)}>
                         {editSymbol}
                     </button>
-                    <button style={buttonStyle} onClick={() => handleDelete(task.taskID)}>
+                    <button className={styles.buttonStyle} onClick={() => handleDelete(task.taskID)}>
                         {deleteSymbol} 
                     </button>
+
                 </div>
             ))}
         </div>
+
     );
 
 }
@@ -308,103 +317,6 @@ const rendertasksTable = (tasks) =>
         );
     };
 
-    const buttonContainerStyle = {
-        display: 'flex',
-        justifyContent: 'space-between', // Adjust as needed
-        alignItems: 'center', // Align buttons vertically in the center
-        width: '100%' // Adjust the width as needed
-    };
-    const formStyle = {
-        height: '100%',
-        borderradius: '20%'
-    };
-
-    const inputContainerStyle = {
-        marginBottom: '10px',
-        width: '100%',
-        borderradius: '20%'
-    };
-
-    const inputStyle = {
-        width: '100%',
-        padding: '8px',
-        borderRadius: '5px',
-        border: '1px solid #ccc',
-    };
-    const popupStyle = {
-        display: 'flex',
-        flexDirection: 'column',
-
-        zIndex: 1,
-        left: 0,
-        top: 0,
-        width: '60%',
-        height: '60%',
-        borderradius: '20%',
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    };
-    const baseButtonStyle = {
-        position: 'right',
-        padding: '8px 16px',
-        cursor: 'pointer',
-        border: 'none',
-        borderRadius: '20%',
-        width: 'auto',
-    };
-
-    const closeButtonStyle = {
-        ...baseButtonStyle,
-        backgroundColor: 'rgba(255, 0, 0, 0.3)',
-        fontSize: '16px',
-        // You can add other specific styles for the close button if needed
-    };
-
-    const addButtonStyle = {
-        ...baseButtonStyle,
-        backgroundColor: 'rgba(0, 200, 0, 0.5)',
-        fontSize: '20px',
-        width: '50px'
-        // Green color (you can use your preferred shade of green)
-
-    };
-    const submitButtonStyle = {
-        ...baseButtonStyle,
-        backgroundColor: 'rgba(0, 200, 0, 0.5)',
-        display: 'inline-block',
-        fontSize: '16px',
-        marginRight: '10px',
-        cursor: 'pointer',
-
-    };
-
-    const popupInnerStyle = {
-        alignItems: 'center', // Center horizontally
-        justifyContent: 'center', // Center vertically
-        backgroundColor: 'white',
-        position: 'absolute',
-        left: '50%',
-        top: '50%',
-        transform: 'translate(-50%, -50%)',
-        padding: '20px',
-        borderRadius: '5px',
-        boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.75)',
-        width: '40%',
-    };
-
-    const h2Style = {
-        marginTop: 0,
-    };
-
-    const labelStyle = {
-        display: 'block',
-        marginBottom: '10px',
-    };
-
-
-    const disabledButtonStyle = {
-        backgroundColor: '#bfbfbf',
-        color: '#ffffff',
-        cursor: 'not-allowed',
-    };
+   
 
 

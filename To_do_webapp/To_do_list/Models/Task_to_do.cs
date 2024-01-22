@@ -24,7 +24,8 @@ namespace To_do_list.Models
         {
             Low,
             Medium,
-            High
+            High,
+            Default
         }
 
     }

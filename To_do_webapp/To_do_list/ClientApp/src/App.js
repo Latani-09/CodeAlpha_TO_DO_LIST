@@ -4,21 +4,26 @@ import AppRoutes from './AppRoutes';
 import AuthorizeRoute from './components/api-authorization/AuthorizeRoute';
 import { Layout } from './components/Layout';
 import './custom.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default class App extends Component {
   static displayName = App.name;
 
-  render() {
-      return (
+    render() {
 
-      <Layout>
+      return (
+    
+          <Layout>
+
         <Routes>
           {AppRoutes.map((route, index) => {
             const { element, requireAuth, ...rest } = route;
             return <Route key={index} {...rest} element={requireAuth ? <AuthorizeRoute {...rest} element={element} /> : element} />;
           })}
         </Routes>
-      </Layout>
+          </Layout>
+
     );
   }
 }

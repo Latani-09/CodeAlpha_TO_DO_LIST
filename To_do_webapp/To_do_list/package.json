@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "react-datepicker": "^4.25.0"
+    "react-datepicker": "^4.25.0",
+    "react-toastify": "^10.0.4"
   }
 }
