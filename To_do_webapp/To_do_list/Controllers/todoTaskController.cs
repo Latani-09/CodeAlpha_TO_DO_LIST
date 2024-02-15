@@ -14,17 +14,12 @@ namespace To_do_list.Controllers
     public class TodoTaskController : Controller
     {
         private ApplicationDbContext _datacontext;
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-         };
+      
 
-        private readonly ILogger<TodoTaskController> _logger;
-
-        public TodoTaskController(ILogger<TodoTaskController> logger, ApplicationDbContext datacontext)
+        public TodoTaskController( ApplicationDbContext datacontext)
         {
             _datacontext = datacontext;
-            _logger = logger;
+            
         }
 
 
